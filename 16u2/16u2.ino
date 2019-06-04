@@ -62,24 +62,24 @@ void loop() {
             Serial1.write('A');
             readyToRead = true;
           }
-    }else{
-      //got all sliders vals
-      sliderVals[serialCount] = inval;
-      serialCount++;
-      if(serialCount >4){
-          slider1State = sliderVals[0];
-          slider2State = sliderVals[1];
-          slider3State = sliderVals[2];
-          slider4State = sliderVals[3];
-          slider5State = sliderVals[4];
-          serialCount = 0;
-          //break;
-          Serial1.write('A');
-        }
-        if(debug){
-          Serial.print("EstCont?");
-          Serial.println(inval);
-        }
+      }else{
+        //got all sliders vals
+        sliderVals[serialCount] = inval;
+        serialCount++;
+        if(serialCount >4){
+            slider1State = sliderVals[0];
+            slider2State = sliderVals[1];
+            slider3State = sliderVals[2];
+            slider4State = sliderVals[3];
+            slider5State = sliderVals[4];
+            serialCount = 0;
+            //break;
+            Serial1.write('A');
+          }
+          if(debug){
+            Serial.print("EstCont?");
+            Serial.println(inval);
+          }
       }
   }
 
