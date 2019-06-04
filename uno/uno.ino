@@ -7,7 +7,7 @@ const int button1 = 10;
 #define FILTER A4
 #define PLAYVOL A5
 #define REFRESH 300
-#define DEADZONE 3
+#define DEADZONE 5
 
 // SH_CP; 11
 const int clockPin = 4;
@@ -22,11 +22,11 @@ int lowEqState = 0;
 int hiEqState = 0;
 int filterState = 0;
 int playVolState = 0;
-int oldvefxState = 255;
-int oldlowEqState = 255;
-int oldhiEqState = 255;
-int oldfilterState = 255;
-int oldplayVolState = 255;
+int oldvefxState = 0;
+int oldlowEqState = 0;
+int oldhiEqState = 0;
+int oldfilterState = 0;
+int oldplayVolState = 0;
 
 bool estConnect = false;
 
@@ -51,42 +51,56 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  updateSeg();
   SendSliderVals();
-  updateSeg();
-  delayMicroseconds(REFRESH);
+  //updateSeg();
+  //delayMicroseconds(REFRESH);
 }
 
 void GetSliderVals(){
   
   vefxState = analogRead(VEFX)/4;
+  delay(2);
   lowEqState = analogRead(LOWEQ)/4;
+  delay(2);
   hiEqState = analogRead(HIEQ)/4;
+  delay(2);
   filterState = analogRead(FILTER)/4;
+  delay(2);
   playVolState = analogRead(PLAYVOL)/4;
+  delay(2);
+
 }
 
 void SendSliderVals(){
   GetSliderVals();
+  //read word for 16 SEG
+  //if(Serial.available() > 0){
+    //ReadChar();
+    if(abs(vefxState-oldvefxState)>DEADZONE){
+     SendAnalogs();
+    }else if(abs(lowEqState-oldlowEqState)>DEADZONE){
+      SendAnalogs();
+    }else if(abs(hiEqState-oldhiEqState)>DEADZONE){
+     SendAnalogs();
+    }else if(abs(filterState-oldfilterState)>DEADZONE){
+      SendAnalogs();
+    }else if(abs(playVolState-oldplayVolState)>DEADZONE){
+      SendAnalogs();
+  }
+  
+}
 
-  //only update USB MCU when values change
-  if(abs(vefxState-oldvefxState)>DEADZONE){
+void SendAnalogs(){
     Serial.write(vefxState);
     Serial.write(lowEqState);
     Serial.write(hiEqState);
     Serial.write(filterState);
     Serial.write(playVolState);
-    //Serial.print(inString);
     oldvefxState = vefxState;
     oldlowEqState = lowEqState;
     oldhiEqState = hiEqState;
     oldfilterState = filterState;
     oldplayVolState = playVolState;
-  }
-  //read word for 16 SEG
-  if(Serial.available() > 0){
-    ReadChar();
-  }
 }
 
 void ReadChar(){
