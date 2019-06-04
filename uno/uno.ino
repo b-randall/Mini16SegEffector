@@ -33,6 +33,7 @@ bool estConnect = false;
 char inChar = ' ' ;
 String inString = "";
 int segCount = 0;
+int sliderCount = 0;
 
 void setup() {
   pinMode(clockPin, OUTPUT);
@@ -53,44 +54,53 @@ void loop() {
   // put your main code here, to run repeatedly:
   SendSliderVals();
   //updateSeg();
-  //delayMicroseconds(REFRESH);
+  delayMicroseconds(2000);
 }
 
 void GetSliderVals(){
-  
-  vefxState = analogRead(VEFX)/4;
-  delay(2);
-  lowEqState = analogRead(LOWEQ)/4;
-  delay(2);
-  hiEqState = analogRead(HIEQ)/4;
-  delay(2);
-  filterState = analogRead(FILTER)/4;
-  delay(2);
-  playVolState = analogRead(PLAYVOL)/4;
-  delay(2);
-
+  switch(sliderCount){
+    case 0:
+      vefxState = analogRead(VEFX)/4;
+      sliderCount++;
+      break;
+    case 1:
+      lowEqState = analogRead(LOWEQ)/4;
+      sliderCount++;
+      break;
+    case 2:
+      hiEqState = analogRead(HIEQ)/4;
+      sliderCount++;
+      break;
+    case 3:
+      filterState = analogRead(FILTER)/4;
+      sliderCount++;
+      break;
+    case 4:
+      playVolState = analogRead(PLAYVOL)/4;
+      sliderCount = 0;
+      break;
+  }
 }
 
 void SendSliderVals(){
   GetSliderVals();
-  //read word for 16 SEG
-  //if(Serial.available() > 0){
-    //ReadChar();
-    if(abs(vefxState-oldvefxState)>DEADZONE){
+    //only send slider update if there is a change and USB MCU asking for update
+    if(abs(vefxState-oldvefxState)>DEADZONE and Serial.available()>0 ){
      SendAnalogs();
-    }else if(abs(lowEqState-oldlowEqState)>DEADZONE){
+    }else if(abs(lowEqState-oldlowEqState)>DEADZONE and Serial.available()>0){
       SendAnalogs();
-    }else if(abs(hiEqState-oldhiEqState)>DEADZONE){
+    }else if(abs(hiEqState-oldhiEqState)>DEADZONE and Serial.available()>0){
      SendAnalogs();
-    }else if(abs(filterState-oldfilterState)>DEADZONE){
+    }else if(abs(filterState-oldfilterState)>DEADZONE and Serial.available()>0){
       SendAnalogs();
-    }else if(abs(playVolState-oldplayVolState)>DEADZONE){
+    }else if(abs(playVolState-oldplayVolState)>DEADZONE and Serial.available()>0){
       SendAnalogs();
   }
   
 }
 
 void SendAnalogs(){
+    ReadChar();
     Serial.write(vefxState);
     Serial.write(lowEqState);
     Serial.write(hiEqState);
@@ -101,6 +111,7 @@ void SendAnalogs(){
     oldhiEqState = hiEqState;
     oldfilterState = filterState;
     oldplayVolState = playVolState;
+   
 }
 
 void ReadChar(){
