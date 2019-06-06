@@ -46,7 +46,7 @@ void setup() {
 
   //Declare Gamepad to PC
   Gamepad.begin();
-  
+
   if(debug){
      Serial.begin(9600);
   }
@@ -73,25 +73,23 @@ void loop() {
             slider4State = sliderVals[3];
             slider5State = sliderVals[4];
             serialCount = 0;
-            Serial1.write("BEATMANIA");
             //break;
+            Serial1.write('A');
           }
-        if(debug){
-          Serial.print("EstCont?");
-          Serial.println(inval);      
-        }
+          if(debug){
+            Serial.print("EstCont?");
+            Serial.println(inval);
+          }
       }
   }
-    
-    
+
+
   GetAndSetStates();
   SetSliders();
-  send16Seg();
    //give time for uno 16segdisplay
-
   Gamepad.write();
-  delay(100);
-     
+  delay(30);
+
 }
 
 void GetAndSetStates(){
@@ -100,7 +98,7 @@ void GetAndSetStates(){
   effState = digitalRead(EFFECT);
   vefxState = digitalRead(VEFX);
   P2State = digitalRead(P2);
- 
+
   //set gamePad states
   if(P1State == LOW){
     Gamepad.press(P1);
@@ -125,6 +123,7 @@ void GetAndSetStates(){
 }
 void send16Seg(){
   //do 16 seg shit
+  Serial1.write("BEATMANIA");
 }
 
 void SetSliders(){

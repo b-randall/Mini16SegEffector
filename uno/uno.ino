@@ -7,14 +7,19 @@ const int button1 = 10;
 #define FILTER A4
 #define PLAYVOL A5
 #define REFRESH 300
-#define DEADZONE 3
+#define DEADZONE 5
 
+
+//74hc595 pin setup
+//
 // SH_CP; 11
 const int clockPin = 4;
 // DS; 15
 const int dataPin = 2;
 // ST_CP; 12
 const int latchPin = 3;
+//OE
+const int OE = 6;
 
 
 int vefxState = 0;
@@ -22,25 +27,27 @@ int lowEqState = 0;
 int hiEqState = 0;
 int filterState = 0;
 int playVolState = 0;
-int oldvefxState = 255;
-int oldlowEqState = 255;
-int oldhiEqState = 255;
-int oldfilterState = 255;
-int oldplayVolState = 255;
+int oldvefxState = 0;
+int oldlowEqState = 0;
+int oldhiEqState = 0;
+int oldfilterState = 0;
+int oldplayVolState = 0;
 
 bool estConnect = false;
 
 char inChar = ' ' ;
 String inString = "";
 int segCount = 0;
+int sliderCount = 0;
 
 void setup() {
+  pinMode(OE, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
   pinMode(latchPin, OUTPUT);
 
   pinMode(5, OUTPUT);
-  digitalWrite(5, 0);
+  refreshOff();
 
   
   delay(1000); //let USB MCU setup
@@ -51,42 +58,66 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  updateSeg();
   SendSliderVals();
   updateSeg();
-  delayMicroseconds(REFRESH);
+  delayMicroseconds(1500);
 }
 
 void GetSliderVals(){
-  
-  vefxState = analogRead(VEFX)/4;
-  lowEqState = analogRead(LOWEQ)/4;
-  hiEqState = analogRead(HIEQ)/4;
-  filterState = analogRead(FILTER)/4;
-  playVolState = analogRead(PLAYVOL)/4;
+  switch(sliderCount){
+    case 0:
+      vefxState = analogRead(VEFX)/4;
+      sliderCount++;
+      break;
+    case 1:
+      lowEqState = analogRead(LOWEQ)/4;
+      sliderCount++;
+      break;
+    case 2:
+      hiEqState = analogRead(HIEQ)/4;
+      sliderCount++;
+      break;
+    case 3:
+      filterState = analogRead(FILTER)/4;
+      sliderCount++;
+      break;
+    case 4:
+      playVolState = analogRead(PLAYVOL)/4;
+      sliderCount = 0;
+      break;
+  }
 }
 
 void SendSliderVals(){
   GetSliderVals();
+    //only send slider update if there is a change and USB MCU asking for update
+    if(abs(vefxState-oldvefxState)>DEADZONE and Serial.available()>0 ){
+     SendAnalogs();
+    }else if(abs(lowEqState-oldlowEqState)>DEADZONE and Serial.available()>0){
+      SendAnalogs();
+    }else if(abs(hiEqState-oldhiEqState)>DEADZONE and Serial.available()>0){
+     SendAnalogs();
+    }else if(abs(filterState-oldfilterState)>DEADZONE and Serial.available()>0){
+      SendAnalogs();
+    }else if(abs(playVolState-oldplayVolState)>DEADZONE and Serial.available()>0){
+      SendAnalogs();
+  }
+  
+}
 
-  //only update USB MCU when values change
-  if(abs(vefxState-oldvefxState)>DEADZONE){
+void SendAnalogs(){
+    ReadChar();
     Serial.write(vefxState);
     Serial.write(lowEqState);
     Serial.write(hiEqState);
     Serial.write(filterState);
     Serial.write(playVolState);
-    //Serial.print(inString);
     oldvefxState = vefxState;
     oldlowEqState = lowEqState;
     oldhiEqState = hiEqState;
     oldfilterState = filterState;
     oldplayVolState = playVolState;
-  }
-  //read word for 16 SEG
-  if(Serial.available() > 0){
-    ReadChar();
-  }
+   
 }
 
 void ReadChar(){
@@ -104,6 +135,7 @@ void EstablishConnection(){
     Serial.print('A');
     delay(300);
   }
+  digitalWrite(OE, LOW);
 }
 
 void updateSeg(){
@@ -174,6 +206,7 @@ void updateSeg(){
       segCount = 0;
       break;
   }
+ 
   //TODO - get 16 seg string from USB hid and set display
 }
 
