@@ -9,12 +9,16 @@ const int button1 = 10;
 #define REFRESH 300
 #define DEADZONE 5
 
+
+//74hc595 pin setup
 // SH_CP; 11
 const int clockPin = 4;
 // DS; 15
 const int dataPin = 2;
 // ST_CP; 12
 const int latchPin = 3;
+//OE
+const int OE = 6;
 
 
 int vefxState = 0;
@@ -36,12 +40,13 @@ int segCount = 0;
 int sliderCount = 0;
 
 void setup() {
+  pinMode(OE, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
   pinMode(latchPin, OUTPUT);
 
   pinMode(5, OUTPUT);
-  digitalWrite(5, 0);
+  refreshOff();
 
   
   delay(1000); //let USB MCU setup
@@ -53,8 +58,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   SendSliderVals();
-  //updateSeg();
-  delayMicroseconds(2000);
+  updateSeg();
+  delayMicroseconds(1500);
 }
 
 void GetSliderVals(){
@@ -129,6 +134,7 @@ void EstablishConnection(){
     Serial.print('A');
     delay(300);
   }
+  digitalWrite(OE, LOW);
 }
 
 void updateSeg(){
@@ -199,6 +205,7 @@ void updateSeg(){
       segCount = 0;
       break;
   }
+ 
   //TODO - get 16 seg string from USB hid and set display
 }
 
