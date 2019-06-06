@@ -11,6 +11,7 @@ const int button1 = 10;
 
 
 //74hc595 pin setup
+//
 // SH_CP; 11
 const int clockPin = 4;
 // DS; 15
