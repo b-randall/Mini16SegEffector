@@ -1,6 +1,6 @@
 const int button1 = 10;
+#include "Tlc5940.h"
 //Sliders
-
 #define VEFX A1
 #define LOWEQ A2
 #define HIEQ A3
@@ -14,11 +14,11 @@ const int button1 = 10;
 //
 // SH_CP; 11
 const int clockPin = 4;
-// DS; 15
+// DS; 14
 const int dataPin = 2;
 // ST_CP; 12
-const int latchPin = 3;
-//OE
+const int latchPin = 7;
+//OE 13
 const int OE = 6;
 
 
@@ -41,13 +41,16 @@ int segCount = 0;
 int sliderCount = 0;
 
 void setup() {
+  Tlc.init(0);
+  
   pinMode(OE, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
   pinMode(latchPin, OUTPUT);
+  pinMode(0, OUTPUT);
 
   pinMode(5, OUTPUT);
-  refreshOff();
+  displayOff();
 
   
   delay(1000); //let USB MCU setup
@@ -60,7 +63,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   SendSliderVals();
   updateSeg();
-  delayMicroseconds(1500);
+  delayMicroseconds(1000);
 }
 
 void GetSliderVals(){
@@ -141,7 +144,6 @@ void EstablishConnection(){
 void updateSeg(){
   switch(segCount){
     case 0:
-      //refreshOff();
       digitalWrite(5, 0);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000001);
@@ -149,59 +151,54 @@ void updateSeg(){
       segCount++;
       break;
     case 1:
-      //refreshOff();
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000010);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
     case 2:
-      //refreshOff();
+      digitalWrite(8, 0);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000100);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
     case 3:
-      //refreshOff();
+      setTLC(1);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00001000);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
     case 4:
-      //refreshOff();
+      setTLC(2);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00010000);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
-    case 5:
-      //refreshOff();
+    case 5:    
+      setTLC(3);
+      delay(1);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00100000);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
     case 6:
-      //refreshOff();
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B01000000);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
     case 7:
-     // refreshOff();
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B10000000);
       digitalWrite(latchPin, HIGH);
       segCount++;
       break;
     case 8:
-      //refreshOff();
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00000000);
-      digitalWrite(latchPin, HIGH);
+      displayOff();
       digitalWrite(5, 1);
       segCount = 0;
       break;
@@ -210,7 +207,7 @@ void updateSeg(){
   //TODO - get 16 seg string from USB hid and set display
 }
 
-void refreshOff(){
+void displayOff(){
   digitalWrite(5, 0);
   digitalWrite(latchPin, LOW);
   shiftOut(dataPin, clockPin, MSBFIRST, B00000000);
@@ -218,5 +215,9 @@ void refreshOff(){
 }
 
 void setTLC(int SegNum){
-  //do tlc stuff
+  displayOff();
+  Tlc.clear();
+  Tlc.set(SegNum, 4095);
+  Tlc.update();
+  delay(1);
 }
