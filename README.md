@@ -19,7 +19,9 @@ uses TLC5940 16 channel LED driver and 74HC595 8-bit bit shifter for driving 16 
 - 9 x NPN transistors/mosfets
 - 5 x 10k slide potentiometers (official use ALPS 60cm(?) with center detent, hard to source similar spec)
 - 4 x mechanical switches 
-- 1 x 1k resistor
+- 1 x 2k resistor
+- 1 x 10k resistor
+- other resistors probably
 - 1 x TLC5940 16 channel led display driver
 - 1 x 74HC595 8-bit bit shifter
 
