@@ -1,4 +1,4 @@
-const int button1 = 10;
+const int button1 = 12;
 #include "Tlc5940.h"
 //Sliders
 #define VEFX A1
@@ -8,7 +8,8 @@ const int button1 = 10;
 #define PLAYVOL A5
 #define REFRESH 300
 #define DEADZONE 5
-
+int timer =0;
+int count =0;
 
 //74hc595 pin setup
 //
@@ -40,6 +41,7 @@ String inString = "";
 int segCount = 0;
 int sliderCount = 0;
 
+char segChar[12] = "   hello!   ";
 void setup() {
   Tlc.init(0);
   
@@ -62,8 +64,14 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   SendSliderVals();
+  timer++;
+  if(timer >=200){
+    count ++;
+    timer =0;
+  }
+  //setTLC(segCount);
   updateSeg();
-  delayMicroseconds(1000);
+  delayMicroseconds(800);
 }
 
 void GetSliderVals(){
@@ -144,67 +152,67 @@ void EstablishConnection(){
 void updateSeg(){
   switch(segCount){
     case 0:
+      setTlcChar(segChar[count%12]);
       digitalWrite(5, 0);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000001);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 1:
+      setTlcChar(segChar[count+1%12]);      
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000010);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 2:
+      setTlcChar(segChar[count+2%12]);
       digitalWrite(8, 0);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000100);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 3:
-      setTLC(1);
+    setTlcChar('x');
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00001000);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 4:
-      setTLC(2);
+    setTlcChar('y');
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00010000);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 5:    
-      setTLC(3);
-      delay(1);
+    setTlcChar('z');
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00100000);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 6:
+    setTlcChar('r');
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B01000000);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 7:
+    setTlcChar('s');
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B10000000);
       digitalWrite(latchPin, HIGH);
-      segCount++;
       break;
     case 8:
+    setTlcChar('t');
       displayOff();
       digitalWrite(5, 1);
-      segCount = 0;
       break;
   }
- 
-  //TODO - get 16 seg string from USB hid and set display
+  segCount++;
+  if(segCount > 8) segCount = 0;  
+  //TODO - get 16 seg string from USB hid and set displayOff  
+  if(count > 12){
+    count =0;
+  }
 }
 
 void displayOff(){
@@ -213,11 +221,535 @@ void displayOff(){
   shiftOut(dataPin, clockPin, MSBFIRST, B00000000);
   digitalWrite(latchPin, HIGH);
 }
-
 void setTLC(int SegNum){
   displayOff();
   Tlc.clear();
-  Tlc.set(SegNum, 4095);
-  Tlc.update();
+  setTlcChar('c');
+  Tlc.update();  
   delay(1);
+  if(count >= 16){
+    count =0;
+  }
+}
+
+
+
+void setTlcChar(char letter){
+  displayOff();
+  switch(letter){
+    case 'a':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'b':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 4095);
+      break;
+    case 'c':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'd':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 4095);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 4095);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 40950);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'e':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'f':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'g':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'h':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
+      break;
+    case 'i':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 4095);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 4095);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'j':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 4095);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 4095);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'k':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 0);
+      break;
+    case 'l':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
+      break;
+    case 'm':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 4095);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 0);
+      break;
+    case 'n':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 4095);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
+      break;
+    case 'o':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'p':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'q':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'r':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 's':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 't':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 4095);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 4095);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
+    case 'u':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
+      break;
+    case 'v':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 4095);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 0);
+      break;
+    case 'w':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 4095);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
+      break;
+    case 'x':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 4095);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 4095);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 4095);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 0);
+      break;
+    case 'y':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 4095);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 4095);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 0);
+      break;
+    case 'z':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 4095);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 4095);
+      break;
+    case '1':
+      break;
+    case '2':
+      break;
+    case '3':
+      break;
+    case '4':
+      break;
+    case '5':
+      break;
+    case '6':
+      break;
+    case '7':
+      break;
+    case '8':
+      break;
+    case '9':
+      break;
+    case '0':
+      break;
+    case '!':
+      Tlc.set(0, 0);
+      Tlc.set(1, 4095);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 4095);
+      Tlc.set(15, 4095);
+      break;
+   case NULL:
+      Tlc.clear();
+      break;
+    case ' ':
+      Tlc.clear();
+      break;
+  }
+  Tlc.update(); 
+  delay(1); 
 }
