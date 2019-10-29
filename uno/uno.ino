@@ -7,7 +7,7 @@ const int button1 = 12;
 #define FILTER A4
 #define PLAYVOL A5
 #define REFRESH 300
-#define DEADZONE 1
+#define DEADZONE 5
 int timer =0;
 int count =0;
 
@@ -37,6 +37,7 @@ int oldfilterState = 0;
 int oldplayVolState = 0;
 
 bool estConnect = false;
+bool sendVals = false;
 
 char inChar = ' ' ;
 String inString = "";
@@ -67,6 +68,10 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   handleSerial();
+  
+  if(sendVals){
+    SendSliderVals();
+  }
   timer++;
   if(timer >=200){
     count ++;
@@ -114,7 +119,7 @@ void SendSliderVals(){
       SendAnalogs();
     }else if(abs(playVolState-oldplayVolState)>DEADZONE){
       SendAnalogs();
-  }
+    }
 }
 
 void SendAnalogs(){
@@ -128,6 +133,7 @@ void SendAnalogs(){
     oldhiEqState = hiEqState;
     oldfilterState = filterState;
     oldplayVolState = playVolState;
+    sendVals = false;
    
 }
 String newString = String();
@@ -136,7 +142,7 @@ void handleSerial(){
     inChar = Serial.read();
     if(readingSeg == true){
       if(inChar == '~'){
-        SendSliderVals();
+        sendVals = true;
       }else{
         if(inChar == '#' || Serial.available() <= 0){
            inString = newString;
@@ -147,7 +153,7 @@ void handleSerial(){
       }
     }
     if(inChar == '~'){
-      SendSliderVals();
+      sendVals = true;
     }
     if (inChar == '@'){
       readingSeg = true;
