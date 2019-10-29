@@ -31,6 +31,9 @@ int inval= 0;
 
 bool readyToRead = false;
 
+int timer =0;
+int counter =0;
+
 unsigned int sliderVals[] = {0,0,0,0,0};
 
 
@@ -56,10 +59,10 @@ void loop() {
   // put your main code here, to run repeatedly:
   while(Serial1.available()>0) {
       inval = Serial1.read();
+      Serial.write(inval);
       if(!readyToRead){
           if(char(inval)== 'A'){
-            Serial.println(inval);
-            Serial1.write('A');
+            Serial1.write('~');
             readyToRead = true;
           }
       }else{
@@ -74,11 +77,7 @@ void loop() {
             slider5State = sliderVals[4];
             serialCount = 0;
             //break;
-            Serial1.write('A');
-          }
-          if(debug){
-            Serial.print("EstCont?");
-            Serial.println(inval);
+            Serial1.write('~');
           }
       }
   }
@@ -87,6 +86,12 @@ void loop() {
   GetAndSetStates();
   SetSliders();
    //give time for uno 16segdisplay
+  timer++;
+  if(timer>10){
+    send16Seg(counter%9);
+    counter++;
+    timer=0;
+  }
   Gamepad.write();
   delay(30);
 
@@ -121,9 +126,37 @@ void GetAndSetStates(){
      Gamepad.release(P2);
   }
 }
-void send16Seg(){
+void send16Seg(int offset){
   //do 16 seg shit
-  Serial1.write("BEATMANIA");
+  switch(offset){
+    case 0:
+      Serial1.write("@beatmania#");
+    break;
+    case 1:
+    Serial1.write("@eatmaniab#");
+    break;
+    case 2:
+    Serial1.write("@atmaniabe#");
+    break;
+    case 3:
+    Serial1.write("@tmaniabea#");
+    break;
+    case 4:
+    Serial1.write("@maniabeat#");
+    break;
+    case 5:
+    Serial1.write("@aniabeatm#");
+    break;
+    case 6:
+    Serial1.write("@niabeatma#");
+    break;
+    case 7:
+    Serial1.write("@iabeatman#");
+    break;
+    case 8:    
+    Serial1.write("@abeatmani#");
+    break;
+  }
 }
 
 void SetSliders(){

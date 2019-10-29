@@ -7,7 +7,7 @@ const int button1 = 12;
 #define FILTER A4
 #define PLAYVOL A5
 #define REFRESH 300
-#define DEADZONE 5
+#define DEADZONE 1
 int timer =0;
 int count =0;
 
@@ -21,6 +21,8 @@ const int dataPin = 2;
 const int latchPin = 7;
 //OE 13
 const int OE = 6;
+
+bool readingSeg = false;
 
 
 int vefxState = 0;
@@ -63,13 +65,13 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  SendSliderVals();
+
+  handleSerial();
   timer++;
   if(timer >=200){
     count ++;
     timer =0;
   }
-  //setTLC(segCount);
   updateSeg();
   delayMicroseconds(800);
 }
@@ -100,24 +102,22 @@ void GetSliderVals(){
 }
 
 void SendSliderVals(){
-  GetSliderVals();
+    GetSliderVals();
     //only send slider update if there is a change and USB MCU asking for update
-    if(abs(vefxState-oldvefxState)>DEADZONE and Serial.available()>0 ){
+    if(abs(vefxState-oldvefxState)>DEADZONE){
      SendAnalogs();
-    }else if(abs(lowEqState-oldlowEqState)>DEADZONE and Serial.available()>0){
+    }else if(abs(lowEqState-oldlowEqState)>DEADZONE){
       SendAnalogs();
-    }else if(abs(hiEqState-oldhiEqState)>DEADZONE and Serial.available()>0){
+    }else if(abs(hiEqState-oldhiEqState)>DEADZONE){
      SendAnalogs();
-    }else if(abs(filterState-oldfilterState)>DEADZONE and Serial.available()>0){
+    }else if(abs(filterState-oldfilterState)>DEADZONE){
       SendAnalogs();
-    }else if(abs(playVolState-oldplayVolState)>DEADZONE and Serial.available()>0){
+    }else if(abs(playVolState-oldplayVolState)>DEADZONE){
       SendAnalogs();
   }
-  
 }
 
 void SendAnalogs(){
-    ReadChar();
     Serial.write(vefxState);
     Serial.write(lowEqState);
     Serial.write(hiEqState);
@@ -130,15 +130,30 @@ void SendAnalogs(){
     oldplayVolState = playVolState;
    
 }
-
-void ReadChar(){
-  String newString = String();
-  while(Serial.available() > 0){
+String newString = String();
+void handleSerial(){
+  if(Serial.available() > 0){
     inChar = Serial.read();
-    newString +=inChar;
+    if(readingSeg == true){
+      if(inChar == '~'){
+        SendSliderVals();
+      }else{
+        if(inChar == '#' || Serial.available() <= 0){
+           inString = newString;
+           readingSeg == false;
+        }else{
+          newString += inChar;
+        }
+      }
+    }
+    if(inChar == '~'){
+      SendSliderVals();
+    }
+    if (inChar == '@'){
+      readingSeg = true;
+      newString = String();
+    }
   }
-  inString = newString;
-  //Serial.print(inString);
 }
 
 void EstablishConnection(){
@@ -152,57 +167,56 @@ void EstablishConnection(){
 void updateSeg(){
   switch(segCount){
     case 0:
-      setTlcChar(segChar[count%12]);
-      digitalWrite(5, 0);
+      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000001);
       digitalWrite(latchPin, HIGH);
       break;
     case 1:
-      setTlcChar(segChar[count+1%12]);      
+      setTlcChar(inString[segCount]);     
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000010);
       digitalWrite(latchPin, HIGH);
       break;
     case 2:
-      setTlcChar(segChar[count+2%12]);
+      setTlcChar(inString[segCount]);
       digitalWrite(8, 0);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000100);
       digitalWrite(latchPin, HIGH);
       break;
     case 3:
-    setTlcChar('x');
+      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00001000);
       digitalWrite(latchPin, HIGH);
       break;
     case 4:
-    setTlcChar('y');
+      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00010000);
       digitalWrite(latchPin, HIGH);
       break;
     case 5:    
-    setTlcChar('z');
+      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00100000);
       digitalWrite(latchPin, HIGH);
       break;
     case 6:
-    setTlcChar('r');
+      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B01000000);
       digitalWrite(latchPin, HIGH);
       break;
     case 7:
-    setTlcChar('s');
+      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B10000000);
       digitalWrite(latchPin, HIGH);
       break;
     case 8:
-    setTlcChar('t');
+      setTlcChar(inString[segCount]);
       displayOff();
       digitalWrite(5, 1);
       break;
@@ -743,10 +757,10 @@ void setTlcChar(char letter){
       Tlc.set(14, 4095);
       Tlc.set(15, 4095);
       break;
-   case NULL:
+    case ' ':
       Tlc.clear();
       break;
-    case ' ':
+    default:
       Tlc.clear();
       break;
   }
