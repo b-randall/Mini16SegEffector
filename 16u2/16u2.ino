@@ -87,13 +87,13 @@ void loop() {
   SetSliders();
    //give time for uno 16segdisplay
   timer++;
-  if(timer>10){
+  if(timer>30){
     send16Seg(counter%9);
     counter++;
     timer=0;
   }
   Gamepad.write();
-  delay(30);
+  delay(10);
 
 }
 
