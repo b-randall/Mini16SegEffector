@@ -195,20 +195,26 @@ bool vefx_io_write_16seg(const char *text)
 //Arduino LCD Ticker
 //By Kasaski
 // 2019-04-29
+
+char prevChar[15];
 bool write_ticker(const char *text){
 
-    char end[] = "\n";
     char send[15];
     strcat(send,text); //this is probs useless but whatever
-    strcat(send,end); //add line ending so arduino knows when to stop reading
     DWORD c;
-    return WriteFile(hComm, send, strlen(send), &c, 0); //send to arduino
+    if(!(strcmp(prevChar, send)==0)){
+        strcpy(prevChar, send);
+        printf("%s\n", send);
+        return WriteFile(hComm, send, strlen(send), &c, 0); //send to arduino
+    }else{
+        return true;
+    }
 
 }
 
 
 bool init_ticker(FILE *port) {
-    hComm = CreateFile("\\\\.\\COM6",               //port name
+    hComm = CreateFile("\\\\.\\COM2",               //port name
                       GENERIC_READ | GENERIC_WRITE, //Read/Write
                       0,                            // No Sharing
                       NULL,                         // No Security
