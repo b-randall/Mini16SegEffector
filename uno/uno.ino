@@ -1,3 +1,22 @@
+/**
+ * seg reference for tlc pin outputs
+ * 
+*        --0--   --15-- 
+*       | \    |    / |
+*       3  2   1  14 13
+*       |   \  |  /   |
+*        --4--   --12-
+*       |   /  |  \   |
+*       7  6   5  11  10
+*       | /    |    \ |
+ *       --8--   --9-- 
+ * 
+ * 
+ * 
+ */
+
+
+
 const int button1 = 12;
 #include "Tlc5940.h"
 //Sliders
