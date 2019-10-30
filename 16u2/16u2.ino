@@ -31,7 +31,12 @@ int inval= 0;
 
 bool readyToRead = false;
 
+int timer =0;
+int counter =0;
+
 unsigned int sliderVals[] = {0,0,0,0,0};
+
+String segString = "@beatmania#";
 
 
 void setup() {
@@ -53,17 +58,30 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  while(Serial1.available()>0) {
+  
+  GetSliders();
+  SetSliders();
+  GetAndSetStates();
+  update16Seg();
+  Gamepad.write();
+
+  //delay to not overload the UNO
+  delay(10);
+
+}
+
+
+void GetSliders(){
+  while(Serial1.available() > 0){
       inval = Serial1.read();
+      Serial.write(inval);
       if(!readyToRead){
           if(char(inval)== 'A'){
-            Serial.println(inval);
-            Serial1.write('A');
+            Serial1.write('~');
             readyToRead = true;
           }
       }else{
-        //got all sliders vals
+        //get all sliders vals
         sliderVals[serialCount] = inval;
         serialCount++;
         if(serialCount >4){
@@ -74,22 +92,18 @@ void loop() {
             slider5State = sliderVals[4];
             serialCount = 0;
             //break;
-            Serial1.write('A');
-          }
-          if(debug){
-            Serial.print("EstCont?");
-            Serial.println(inval);
+            Serial1.write('~');
           }
       }
-  }
+   }
+}
 
-
-  GetAndSetStates();
-  SetSliders();
-   //give time for uno 16segdisplay
-  Gamepad.write();
-  delay(30);
-
+void SetSliders(){
+    Gamepad.xAxis(slider1State);
+    Gamepad.yAxis(slider2State);
+    Gamepad.zAxis(slider3State);
+    Gamepad.rxAxis(slider4State);
+    Gamepad.ryAxis(slider5State);
 }
 
 void GetAndSetStates(){
@@ -122,14 +136,33 @@ void GetAndSetStates(){
   }
 }
 void send16Seg(){
-  //do 16 seg shit
-  Serial1.write("BEATMANIA");
+//  //do 16 seg shit
+  char charOut[segString.length()+1];
+  for(int i=0; i < sizeof(charOut); i++){
+    charOut[i] = segString.charAt(i);
+  }
+  Serial1.write('@');
+  Serial1.write(charOut);
+  Serial1.write('#');
+  Serial1.flush();
 }
 
-void SetSliders(){
-    Gamepad.xAxis(slider1State);
-    Gamepad.yAxis(slider2State);
-    Gamepad.zAxis(slider3State);
-    Gamepad.rxAxis(slider4State);
-    Gamepad.ryAxis(slider5State);
+
+void update16Seg(){
+  //should handle this better
+  //hopefully only unique string is ever passed here but should check anyway.
+  String newString;
+  if(Serial.available() > 0){
+      char inChar;
+      while(Serial.available() > 0){
+        inChar = Serial.read();
+        if(inChar !='\n')
+        newString +=inChar;
+      }
+      if(newString != segString){
+        segString = newString;
+        segString.toLowerCase();
+        send16Seg();
+      }
+  }
 }
