@@ -36,6 +36,8 @@ int counter =0;
 
 unsigned int sliderVals[] = {0,0,0,0,0};
 
+String segString = "@beatmania#";
+
 
 void setup() {
   //Setup Panel Inputs
@@ -56,8 +58,21 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  while(Serial1.available()>0) {
+  
+  GetSliders();
+  SetSliders();
+  GetAndSetStates();
+  update16Seg();
+  Gamepad.write();
+
+  //delay to not overload the UNO
+  delay(10);
+
+}
+
+
+void GetSliders(){
+  while(Serial1.available() > 0){
       inval = Serial1.read();
       Serial.write(inval);
       if(!readyToRead){
@@ -66,7 +81,7 @@ void loop() {
             readyToRead = true;
           }
       }else{
-        //got all sliders vals
+        //get all sliders vals
         sliderVals[serialCount] = inval;
         serialCount++;
         if(serialCount >4){
@@ -80,21 +95,15 @@ void loop() {
             Serial1.write('~');
           }
       }
-  }
+   }
+}
 
-
-  GetAndSetStates();
-  SetSliders();
-   //give time for uno 16segdisplay
-  timer++;
-  if(timer>30){
-    send16Seg(counter%9);
-    counter++;
-    timer=0;
-  }
-  Gamepad.write();
-  delay(10);
-
+void SetSliders(){
+    Gamepad.xAxis(slider1State);
+    Gamepad.yAxis(slider2State);
+    Gamepad.zAxis(slider3State);
+    Gamepad.rxAxis(slider4State);
+    Gamepad.ryAxis(slider5State);
 }
 
 void GetAndSetStates(){
@@ -126,43 +135,34 @@ void GetAndSetStates(){
      Gamepad.release(P2);
   }
 }
-void send16Seg(int offset){
-  //do 16 seg shit
-  switch(offset){
-    case 0:
-      Serial1.write("@beatmania#");
-    break;
-    case 1:
-    Serial1.write("@eatmaniab#");
-    break;
-    case 2:
-    Serial1.write("@atmaniabe#");
-    break;
-    case 3:
-    Serial1.write("@tmaniabea#");
-    break;
-    case 4:
-    Serial1.write("@maniabeat#");
-    break;
-    case 5:
-    Serial1.write("@aniabeatm#");
-    break;
-    case 6:
-    Serial1.write("@niabeatma#");
-    break;
-    case 7:
-    Serial1.write("@iabeatman#");
-    break;
-    case 8:    
-    Serial1.write("@abeatmani#");
-    break;
+void send16Seg(){
+//  //do 16 seg shit
+  char charOut[segString.length()+1];
+  for(int i=0; i < sizeof(charOut); i++){
+    charOut[i] = segString.charAt(i);
   }
+  Serial1.write('@');
+  Serial1.write(charOut);
+  Serial1.write('#');
+  Serial1.flush();
 }
 
-void SetSliders(){
-    Gamepad.xAxis(slider1State);
-    Gamepad.yAxis(slider2State);
-    Gamepad.zAxis(slider3State);
-    Gamepad.rxAxis(slider4State);
-    Gamepad.ryAxis(slider5State);
+
+void update16Seg(){
+  //should handle this better
+  //hopefully only unique string is ever passed here but should check anyway.
+  String newString;
+  if(Serial.available() > 0){
+      char inChar;
+      while(Serial.available() > 0){
+        inChar = Serial.read();
+        if(inChar !='\n')
+        newString +=inChar;
+      }
+      if(newString != segString){
+        segString = newString;
+        segString.toLowerCase();
+        send16Seg();
+      }
+  }
 }

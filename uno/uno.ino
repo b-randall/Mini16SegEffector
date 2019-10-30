@@ -40,7 +40,7 @@ bool estConnect = false;
 bool sendVals = false;
 
 char inChar = ' ' ;
-String inString = "";
+String inString = "waiting";
 int segCount = 0;
 int sliderCount = 0;
 
@@ -78,7 +78,7 @@ void loop() {
     timer =0;
   }
   updateSeg();
-  delayMicroseconds(800);
+  delayMicroseconds(500);
 }
 
 void GetSliderVals(){
@@ -171,58 +171,50 @@ void EstablishConnection(){
 }
 
 void updateSeg(){
+  setTlcChar(inString.charAt(segCount));
   switch(segCount){
     case 0:
-      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000001);
       digitalWrite(latchPin, HIGH);
       break;
-    case 1:
-      setTlcChar(inString[segCount]);     
+    case 1:  
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000010);
       digitalWrite(latchPin, HIGH);
       break;
     case 2:
-      setTlcChar(inString[segCount]);
       digitalWrite(8, 0);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00000100);
       digitalWrite(latchPin, HIGH);
       break;
     case 3:
-      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00001000);
       digitalWrite(latchPin, HIGH);
       break;
     case 4:
-      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00010000);
       digitalWrite(latchPin, HIGH);
       break;
     case 5:    
-      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B00100000);
       digitalWrite(latchPin, HIGH);
       break;
     case 6:
-      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B01000000);
       digitalWrite(latchPin, HIGH);
       break;
     case 7:
-      setTlcChar(inString[segCount]);
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, B10000000);
       digitalWrite(latchPin, HIGH);
       break;
     case 8:
-      setTlcChar(inString[segCount]);
       displayOff();
       digitalWrite(5, 1);
       break;
@@ -726,24 +718,184 @@ void setTlcChar(char letter){
       Tlc.set(15, 4095);
       break;
     case '1':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '2':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
       break;
     case '3':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
       break;
     case '4':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '5':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '6':
+      Tlc.set(0, 4095);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 4095);
+      Tlc.set(4, 4095);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 4095);
+      Tlc.set(8, 4095);
+      Tlc.set(9, 4095);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 4095);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
       break;
     case '7':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '8':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '9':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '0':
+      Tlc.set(0, 0);
+      Tlc.set(1, 0);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 0);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 0);
+      Tlc.set(14, 0);
+      Tlc.set(15, 0);
       break;
     case '!':
       Tlc.set(0, 0);
