@@ -92,7 +92,7 @@ void GetSliders(){
             slider5State = sliderVals[4];
             serialCount = 0;
             //break;
-            Serial1.write('~');
+         //   Serial1.write('~');
           }
       }
    }
@@ -161,7 +161,6 @@ void update16Seg(){
       }
       if(newString != segString){
         segString = newString;
-        segString.toLowerCase();
         send16Seg();
       }
   }
