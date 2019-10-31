@@ -1208,7 +1208,7 @@ void setTlcChar(char letter){
       break;
     case ']':
       Tlc.set(0, 0);
-      Tlc.set(1, 4095);
+      Tlc.set(1, 0);
       Tlc.set(2, 0);
       Tlc.set(3, 0);
       Tlc.set(4, 0);
@@ -1216,7 +1216,7 @@ void setTlcChar(char letter){
       Tlc.set(6, 0);
       Tlc.set(7, 0);
       Tlc.set(8, 0);
-      Tlc.set(9, 0);
+      Tlc.set(9, 4095);
       Tlc.set(10, 4095);
       Tlc.set(11, 0);
       Tlc.set(12, 0);
