@@ -1189,32 +1189,14 @@ void setTlcChar(char letter){
       Tlc.set(15, 0);
       break;
     case '[':
-      Tlc.set(0, 0);
-      Tlc.set(1, 4095);
-      Tlc.set(2, 0);
-      Tlc.set(3, 0);
-      Tlc.set(4, 0);
-      Tlc.set(5, 4095);
-      Tlc.set(6, 0);
-      Tlc.set(7, 0);
-      Tlc.set(8, 0);
-      Tlc.set(9, 4095);
-      Tlc.set(10, 0);
-      Tlc.set(11, 0);
-      Tlc.set(12, 0);
-      Tlc.set(13, 0);
-      Tlc.set(14, 0);
-      Tlc.set(15, 4095);
-      break;
-    case ']':
       Tlc.set(0, 4095);
-      Tlc.set(1, 4095);
+      Tlc.set(1, 0);
       Tlc.set(2, 0);
-      Tlc.set(3, 0);
+      Tlc.set(3, 4095);
       Tlc.set(4, 0);
-      Tlc.set(5, 4095);
+      Tlc.set(5, 0);
       Tlc.set(6, 0);
-      Tlc.set(7, 0);
+      Tlc.set(7, 4095);
       Tlc.set(8, 4095);
       Tlc.set(9, 0);
       Tlc.set(10, 0);
@@ -1223,6 +1205,25 @@ void setTlcChar(char letter){
       Tlc.set(13, 0);
       Tlc.set(14, 0);
       Tlc.set(15, 0);
+      break;
+    case ']':
+      Tlc.set(0, 0);
+      Tlc.set(1, 4095);
+      Tlc.set(2, 0);
+      Tlc.set(3, 0);
+      Tlc.set(4, 0);
+      Tlc.set(5, 0);
+      Tlc.set(6, 0);
+      Tlc.set(7, 0);
+      Tlc.set(8, 0);
+      Tlc.set(9, 0);
+      Tlc.set(10, 4095);
+      Tlc.set(11, 0);
+      Tlc.set(12, 0);
+      Tlc.set(13, 4095);
+      Tlc.set(14, 0);
+      Tlc.set(15, 4095);
+      break;
     case ' ':
       Tlc.clear();
       break;
