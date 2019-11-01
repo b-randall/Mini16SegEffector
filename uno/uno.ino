@@ -229,7 +229,7 @@ void setTLC(int SegNum){
 
 /* This is the tlc "font"
  * can be improved, currently a mandatory delay(1) to allow the tlc to update and stop ghosting
- * Maybe a custom TLC library could imrpove this, as a smaller delay here means a longer dellay in the loop 
+ * Maybe a custom TLC library could imrpove this, as a smaller delay here means a longer delay in the loop 
  * which would increase led brighness (more time on per loop)
  */
 void setTlcChar(char letter){
