@@ -189,59 +189,21 @@ void EstablishConnection(){
 }
 
 void updateSeg(){
+  //set the char before turning the segment on
   setTlcChar(inString.charAt(segCount));
-  switch(segCount){
-    case 0:
+
+  // The bit shifter only supports 8 lights, we need 9 for the display,
+  // so pin 5 on the arduino is used. Seems to work fine so far.
+  if(!(segCount>=8)){
       digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00000001);
+      shiftOut(dataPin, clockPin, MSBFIRST, 1<<segCount);
       digitalWrite(latchPin, HIGH);
-      break;
-    case 1:  
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00000010);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 2:
-      digitalWrite(8, 0);
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00000100);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 3:
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00001000);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 4:
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00010000);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 5:    
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B00100000);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 6:
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B01000000);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 7:
-      digitalWrite(latchPin, LOW);
-      shiftOut(dataPin, clockPin, MSBFIRST, B10000000);
-      digitalWrite(latchPin, HIGH);
-      break;
-    case 8:
-      displayOff();
-      digitalWrite(5, 1);
-      break;
+      segCount++;
   }
-  segCount++;
-  if(segCount > 8) segCount = 0;  
-  //TODO - get 16 seg string from USB hid and set displayOff  
-  if(count > 12){
-    count =0;
+  else{
+    segCount=0;
+    displayOff();
+    digitalWrite(5, 1);
   }
 }
 
@@ -251,6 +213,8 @@ void displayOff(){
   shiftOut(dataPin, clockPin, MSBFIRST, B00000000);
   digitalWrite(latchPin, HIGH);
 }
+
+//this was used for testing 
 void setTLC(int SegNum){
   displayOff();
   Tlc.clear();
@@ -263,7 +227,11 @@ void setTLC(int SegNum){
 }
 
 
-
+/* This is the tlc "font"
+ * can be improved, currently a mandatory delay(1) to allow the tlc to update and stop ghosting
+ * Maybe a custom TLC library could imrpove this, as a smaller delay here means a longer dellay in the loop 
+ * which would increase led brighness (more time on per loop)
+ */
 void setTlcChar(char letter){
   displayOff();
   switch(letter){
