@@ -41,6 +41,10 @@ enum iidx_slider_bits {
 HANDLE *hComm;
 boolean Status;
 
+//ticker
+char prevChar[9];
+boolean ticker = false;
+
 
 struct vefx_io_slider_inputs {
     uint8_t slider_up;
@@ -93,16 +97,16 @@ bool vefx_io_init(thread_create_t thread_create, thread_join_t thread_join,
         thread_destroy_t thread_destroy)
 {
     /* geninput should have already been initted be now so we don't do it */
-    vefx_io_slider[0].pos = 8;
-    vefx_io_slider[1].pos = 8;
-    vefx_io_slider[2].pos = 8;
+    vefx_io_slider[0].pos = 15;
+    vefx_io_slider[1].pos = 15;
+    vefx_io_slider[2].pos = 15;
     vefx_io_slider[3].pos = 15;
     vefx_io_slider[4].pos = 15;
 
     /* Initialize your own IO devices here. Log something and then return
        false if the initialization fails. */
 
-    init_ticker();
+    ticker = init_ticker();
 
     return Status;
 
@@ -122,7 +126,9 @@ void vefx_io_fini(void)
 {
     /* This function gets called as IIDX shuts down after an Alt-F4. Close your
        connections to your IO devices here. */
-    close_ticker();
+    if(ticker){
+        close_ticker();
+    }
 }
 
 static void vefx_io_slider_update(uint64_t* ppad)
@@ -187,21 +193,24 @@ bool vefx_io_write_16seg(const char *text)
 {
     /* Insert code to write to your 16seg display here.
        Log something and return false if you encounter an IO error. */
-      return write_ticker(text);
+    if(ticker){
+        if(!write_ticker(text)){
+            return ticker = false;
+        }
+    }
+    return true;
 }
-
-
-
 //Arduino LCD Ticker
 //By Kasaski
-// 2019-04-29
+//2019-04-29
 
-char prevChar[15];
 bool write_ticker(const char *text){
 
-    char send[15];
-    strcat(send,text); //this is probs useless but whatever
+    char send[9];
+    strncpy(send,text, 9); //this is probs useless but whatever
+    send[9] = 0x00;
     DWORD c;
+    //don't send to ticker if no change
     if(!(strcmp(prevChar, send)==0)){
         strcpy(prevChar, send);
         printf("%s\n", send);
@@ -224,6 +233,7 @@ bool init_ticker(FILE *port) {
 
     if (hComm == INVALID_HANDLE_VALUE){
         printf("Error in opening serial port\n");
+        return false;
     }
     else{
         printf("opening serial port successful\n");
@@ -248,11 +258,11 @@ bool init_ticker(FILE *port) {
                    dNoOFBytestoWrite,  //No of bytes to write
                    &dNoOfBytesWritten, //Bytes written
                    NULL);
-    return 0;
+    return true;
 }
 
 bool close_ticker() {
-    char lpBuffer[] = "IIDX closing\n";
+    char lpBuffer[] = "IIDX closing\0";
     DWORD dNoOFBytestoWrite;         // No of bytes to write into the port
     DWORD dNoOfBytesWritten = 0;     // No of bytes written to the port
     dNoOFBytestoWrite = sizeof(lpBuffer);
