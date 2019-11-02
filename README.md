@@ -9,9 +9,8 @@ uses TLC5940 16 channel LED driver and 74HC595 8-bit bit shifter for driving 16 
 
 
 # ToDo: 
-- create font for 16 Seg TLC
-- add TLC communcation
-- write vefxio.dll implemenation for certain LDJ tools 
+- Clean code
+- work on PCB and make sure hardware/electronics are good
 
 # Parts list:
 - 1 x Arduino Uno R3 (with 16u2 AVR), may work on mega, untested
