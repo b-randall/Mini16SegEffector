@@ -1,7 +1,7 @@
 # Mini16SegEffector
 Mini 16-Segment and Effect Arduino Shield panel for LDJ
 
-![16SEG](https://drive.google.com/file/d/1thPIUSWuwRhZFOsEpdE4WR4jtpazpT2A/view?usp=sharing)
+![16SEG](https://i.imgur.com/QUkqoB0.jpg)
 
 uses TLC5940 16 channel LED driver and 74HC595 8-bit bit shifter for driving 16 seg display
 
