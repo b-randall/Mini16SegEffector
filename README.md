@@ -1,5 +1,11 @@
 # Mini16SegEffector
-Mini 16-Segment and Effect Arduino Shield panel for LDJ
+Mini 16-Segment and Effector Arduino Shield for IIDX
+
+Features a mini 16 Segment display, Effector sliders and vefx/effect/p1 start/p2 start buttons, (Wow! just like the arcade!?).
+
+16 seg currently uses a vefxio.dll implementation that only works with bt5 (and apparently tt but I cant find documentation on this), SpiceTools support (hopefully) coming soon.
+
+Sliders can only be bound on spiceTools, still working out a way to bind that would work with bt5 and tt.
 
 ![16SEG](https://i.imgur.com/QUkqoB0.jpg)
 
@@ -12,6 +18,7 @@ uses TLC5940 16 channel LED driver and 74HC595 8-bit bit shifter for driving 16 
 
 # ToDo: 
 - Clean code
+- Find any missing symbols for font
 - work on PCB and make sure hardware/electronics are good
 
 # Parts list:
